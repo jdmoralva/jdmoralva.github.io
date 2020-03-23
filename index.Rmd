@@ -18,7 +18,7 @@ covid19 <- read.csv("http://query.data.world/s/cdc5dussbvmp52xnluz6wvyntjn6am",
 names(covid19)[1]="Report_Date"
 ```
 
-```{r}
+```{r, echo=FALSE}
 covid19 %>% 
   select(-Prep_Flow_Runtime, -Province_State, -Lat, -Long) %>% 
   select(Latest_Date, everything(), -Difference) %>% 
@@ -27,10 +27,25 @@ covid19 %>%
   filter(Country_Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil') & 
            Report_Date == Latest_Date) %>% 
   spread(Case_Type, Cases) %>% 
-  arrange(desc(Report_Date))
+  select(-Latest_Date) %>% 
+  arrange(desc(Confirmed)) %>% 
+  mutate(Dead_Rate = round(Deaths/Confirmed,3),
+         Recov_Rate = round(Recovered/Confirmed,3)) %>% 
+  left_join(
+  covid19 %>% 
+  select(-Prep_Flow_Runtime, -Province_State, -Lat, -Long) %>% 
+  select(Latest_Date, everything(), -Cases) %>% 
+  mutate(Report_Date = as.Date(Report_Date, '%m/%d/%y'),
+         Latest_Date = as.Date(Latest_Date, '%m/%d/%y')) %>% 
+  filter(Country_Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil') & 
+           Report_Date == Latest_Date) %>% 
+  spread(Case_Type, Difference) %>% 
+  select(Country_Region, Confirmed) %>% 
+  rename(New_Cases = Confirmed),
+  by = "Country_Region")
 ```
 
-```{r}
+```{r, echo=FALSE}
 covid19 %>% 
   select(-Prep_Flow_Runtime, -Province_State, -Lat, -Long) %>% 
   select(Latest_Date, everything(), -Difference) %>% 

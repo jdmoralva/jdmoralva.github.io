@@ -303,34 +303,18 @@ covid19 &lt;- read.csv(&quot;http://query.data.world/s/cdc5dussbvmp52xnluz6wvynt
                     header = T, stringsAsFactors = F)
 
 names(covid19)[1]=&quot;Report_Date&quot;</code></pre>
-<pre class="r"><code>covid19 %&gt;% 
-  select(-Prep_Flow_Runtime, -Province_State, -Lat, -Long) %&gt;% 
-  select(Latest_Date, everything(), -Difference) %&gt;% 
-  mutate(Report_Date = as.Date(Report_Date, &#39;%m/%d/%y&#39;),
-         Latest_Date = as.Date(Latest_Date, &#39;%m/%d/%y&#39;)) %&gt;% 
-  filter(Country_Region %in% c(&#39;Peru&#39;,&#39;Ecuador&#39;,&#39;Colombia&#39;,&#39;Chile&#39;,&#39;Brazil&#39;) &amp; 
-           Report_Date == Latest_Date) %&gt;% 
-  spread(Case_Type, Cases) %&gt;% 
-  arrange(desc(Report_Date))</code></pre>
-<pre><code>##   Latest_Date Report_Date Country_Region Active Confirmed Deaths Recovered
-## 1  2020-03-21  2020-03-21         Brazil   1004      1021     15         2
-## 2  2020-03-21  2020-03-21          Chile    531       537      0         6
-## 3  2020-03-21  2020-03-21       Colombia    195       196      0         1
-## 4  2020-03-21  2020-03-21        Ecuador    496       506      7         3
-## 5  2020-03-21  2020-03-21           Peru    312       318      5         1</code></pre>
-<pre class="r"><code>covid19 %&gt;% 
-  select(-Prep_Flow_Runtime, -Province_State, -Lat, -Long) %&gt;% 
-  select(Latest_Date, everything(), -Difference) %&gt;% 
-  mutate(Report_Date = as.Date(Report_Date, &#39;%m/%d/%y&#39;),
-         Latest_Date = as.Date(Latest_Date, &#39;%m/%d/%y&#39;)) %&gt;% 
-  filter(Country_Region %in% c(&#39;Peru&#39;,&#39;Ecuador&#39;,&#39;Colombia&#39;,&#39;Chile&#39;,&#39;Brazil&#39;) &amp; 
-           Report_Date &gt;= &#39;2020-03-10&#39;) %&gt;% 
-  spread(Case_Type, Cases) %&gt;% 
-  arrange(desc(Report_Date)) %&gt;% 
-  ggplot(aes(y = Confirmed, x = Report_Date, group=Country_Region, color=Country_Region)) +
-  geom_line(size=1) + 
-  geom_point(size=3, shape=21, fill=&quot;white&quot;) +
-  theme_minimal() </code></pre>
+<pre><code>##   Report_Date Country_Region Active Confirmed Deaths Recovered Dead_Rate
+## 1  2020-03-21         Brazil   1004      1021     15         2     0.015
+## 2  2020-03-21          Chile    531       537      0         6     0.000
+## 3  2020-03-21        Ecuador    496       506      7         3     0.014
+## 4  2020-03-21           Peru    312       318      5         1     0.016
+## 5  2020-03-21       Colombia    195       196      0         1     0.000
+##   Recov_Rate New_Cases
+## 1      0.002       228
+## 2      0.011       103
+## 3      0.006       139
+## 4      0.003        84
+## 5      0.005        68</code></pre>
 <p><img src="index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 </div>
 
