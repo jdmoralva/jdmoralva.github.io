@@ -303,18 +303,14 @@ covid19 &lt;- read.csv(&quot;http://query.data.world/s/cdc5dussbvmp52xnluz6wvynt
                     header = T, stringsAsFactors = F)
 
 names(covid19)[1]=&quot;Report_Date&quot;</code></pre>
-<pre><code>##   Report_Date Country_Region Active Confirmed Deaths Recovered Dead_Rate
-## 1  2020-03-21         Brazil   1004      1021     15         2     0.015
-## 2  2020-03-21          Chile    531       537      0         6     0.000
-## 3  2020-03-21        Ecuador    496       506      7         3     0.014
-## 4  2020-03-21           Peru    312       318      5         1     0.016
-## 5  2020-03-21       Colombia    195       196      0         1     0.000
-##   New_Cases
-## 1       228
-## 2       103
-## 3       139
-## 4        84
-## 5        68</code></pre>
+<pre><code>## # A tibble: 5 x 7
+##   Report_Date Country  Active Confirmed Deaths Recovered New_Cases
+##   &lt;date&gt;      &lt;chr&gt;     &lt;int&gt;     &lt;int&gt;  &lt;int&gt;     &lt;int&gt;     &lt;int&gt;
+## 1 2020-03-21  Brazil     1004      1021     15         2       228
+## 2 2020-03-21  Chile       531       537      0         6       103
+## 3 2020-03-21  Ecuador     496       506      7         3       139
+## 4 2020-03-21  Peru        312       318      5         1        84
+## 5 2020-03-21  Colombia    195       196      0         1        68</code></pre>
 <p><img src="index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 </div>
 

@@ -29,7 +29,6 @@ covid19 %>%
   spread(Case_Type, Cases) %>% 
   select(-Latest_Date) %>% 
   arrange(desc(Confirmed)) %>% 
-  mutate(Dead_Rate = round(Deaths/Confirmed,3)) %>% 
   left_join(
   covid19 %>% 
   select(-Prep_Flow_Runtime, -Province_State, -Lat, -Long) %>% 
@@ -41,7 +40,9 @@ covid19 %>%
   spread(Case_Type, Difference) %>% 
   select(Country_Region, Confirmed) %>% 
   rename(New_Cases = Confirmed),
-  by = "Country_Region")
+  by = "Country_Region") %>% 
+  rename(Country = Country_Region) %>% 
+  as.tibble()
 ```
 
 ```{r, echo=FALSE}
