@@ -32,7 +32,7 @@ covid19 <- covid19 %>%
                              29,Difference))
 
 covid19 %>% 
-  summarise(Last_Reporte = max(Report_Date))
+  summarise(Last_Report = max(Report_Date))
 ```
 
 ```{r, echo=FALSE}
