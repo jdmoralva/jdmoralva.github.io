@@ -2,4 +2,29 @@
 title: "My Website"
 ---
 
-Hello, Website!
+Temas importantes
+
+# COVID-19
+
+```{r, include=FALSE}
+library(tidyverse)
+```
+
+```{r}
+# Read Internet Data
+covid19 <- read.csv("http://query.data.world/s/cdc5dussbvmp52xnluz6wvyntjn6am",
+                    header = T, stringsAsFactors = F)
+
+names(covid19)[1]="Report_Date"
+```
+
+```{r}
+covid19 %>% 
+  select(-Prep_Flow_Runtime, -Province_State, -Lat, -Long) %>% 
+  select(Latest_Date, everything()) %>% 
+  mutate(Report_Date = as.Date(Report_Date, '%m/%d/%y'),
+         Latest_Date = as.Date(Latest_Date, '%m/%d/%y')) %>% 
+  filter(Country_Region=='Peru') %>% 
+  arrange(desc(Report_Date))
+```
+
