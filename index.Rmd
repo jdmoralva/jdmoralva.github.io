@@ -41,8 +41,7 @@ covid19 %>%
   select(Country_Region, Confirmed) %>% 
   rename(New_Cases = Confirmed),
   by = "Country_Region") %>% 
-  rename(Country = Country_Region) %>% 
-  as.tibble()
+  rename(Country = Country_Region)
 ```
 
 ```{r, echo=FALSE}
