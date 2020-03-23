@@ -6,16 +6,31 @@ Análisis estadístico con R
 
 # COVID-19
 
-```{r, include=FALSE}
+```{r, include=FALSE, message=FALSE}
 library(tidyverse)
+library(directlabels)
 ```
 
 ```{r}
-# Read Internet Data
+# Internet Data
 covid19 <- read.csv("http://query.data.world/s/cdc5dussbvmp52xnluz6wvyntjn6am",
                     header = T, stringsAsFactors = F)
+```
 
+```{r, echo=FALSE}
+# Ajustes Varios
+# Report Date
 names(covid19)[1]="Report_Date"
+
+# Ajustes Info Peru
+covid19 <- covid19 %>% 
+  mutate(Report_Date = as.Date(Report_Date, '%m/%d/%y'),
+         Cases = ifelse(Country_Region=='Peru' & Report_Date=='2020-03-20' & Case_Type =='Confirmed',263,Cases),
+         Difference = ifelse(Country_Region=='Peru' & Report_Date=='2020-03-20' & Case_Type =='Confirmed',
+                             29,Difference))
+
+covid19 %>% 
+  summarise(Last_Reporte = max(Report_Date))
 ```
 
 ```{r, echo=FALSE}
@@ -24,7 +39,7 @@ covid19 %>%
   select(Latest_Date, everything(), -Difference) %>% 
   mutate(Report_Date = as.Date(Report_Date, '%m/%d/%y'),
          Latest_Date = as.Date(Latest_Date, '%m/%d/%y')) %>% 
-  filter(Country_Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil') & 
+  filter(Country_Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil','Venezuela') & 
            Report_Date == Latest_Date) %>% 
   spread(Case_Type, Cases) %>% 
   select(-Latest_Date) %>% 
@@ -35,7 +50,7 @@ covid19 %>%
   select(Latest_Date, everything(), -Cases) %>% 
   mutate(Report_Date = as.Date(Report_Date, '%m/%d/%y'),
          Latest_Date = as.Date(Latest_Date, '%m/%d/%y')) %>% 
-  filter(Country_Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil') & 
+  filter(Country_Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil','Venezuela') & 
            Report_Date == Latest_Date) %>% 
   spread(Case_Type, Difference) %>% 
   select(Country_Region, Confirmed) %>% 
@@ -44,24 +59,48 @@ covid19 %>%
   rename(Country = Country_Region)
 ```
 
-```{r, echo=FALSE}
-covid19 %>% 
+```{r, echo=FALSE, message=FALSE}
+p <- covid19 %>% 
   select(-Prep_Flow_Runtime, -Province_State, -Lat, -Long) %>% 
   select(Latest_Date, everything(), -Difference) %>% 
   mutate(Report_Date = as.Date(Report_Date, '%m/%d/%y'),
          Latest_Date = as.Date(Latest_Date, '%m/%d/%y')) %>% 
-  filter(Country_Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil') & 
+  filter(Country_Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil','Venezuela') & 
            Report_Date >= '2020-03-10') %>% 
   spread(Case_Type, Cases) %>% 
   arrange(desc(Report_Date)) %>% 
   ggplot(aes(y = Confirmed, x = Report_Date, group=Country_Region, color=Country_Region)) +
   geom_line(size=1) + 
   geom_point(size=3, shape=21, fill="white") +
+  ggtitle("Tendencia Exponencial COVID-19") +
+  geom_dl(aes(label = Country_Region), method = list("last.points",cex=0.8,vjust=-0.8, hjust=0.5)) +
   theme_minimal() 
+
+p + theme(legend.position="none",
+          axis.title = element_blank())
 ```
 
-
-
+```{r, echo=FALSE, message=FALSE}
+q <- covid19 %>% 
+  select(-Prep_Flow_Runtime, -Province_State, -Lat, -Long) %>% 
+  select(Latest_Date, everything(), -Cases) %>% 
+  mutate(Report_Date = as.Date(Report_Date, '%m/%d/%y'),
+         Latest_Date = as.Date(Latest_Date, '%m/%d/%y')) %>% 
+  filter(Country_Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil','Venezuela') & 
+           Report_Date >= '2020-03-10') %>% 
+  spread(Case_Type, Difference) %>% 
+  arrange(desc(Report_Date)) %>% 
+  ggplot(aes(x=Report_Date, y=Confirmed, fill=Country_Region)) + 
+  geom_bar(stat="identity", position=position_dodge()) +
+  geom_smooth() +
+  facet_wrap(~Country_Region) +
+  ggtitle("Nuevos Casos Confirmados") +
+  theme_minimal()
+ 
+q + theme(legend.position = "none",
+          axis.title = element_blank(),
+          axis.text.x = element_text(angle = 90, hjust = 0)) 
+```
 
 
 
