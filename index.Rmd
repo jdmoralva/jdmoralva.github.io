@@ -1,8 +1,8 @@
 ---
-title: "My Website"
+title: "JD Website"
 ---
 
-Temas importantes
+Análisis estadístico con R
 
 # COVID-19
 
@@ -21,10 +21,34 @@ names(covid19)[1]="Report_Date"
 ```{r}
 covid19 %>% 
   select(-Prep_Flow_Runtime, -Province_State, -Lat, -Long) %>% 
-  select(Latest_Date, everything()) %>% 
+  select(Latest_Date, everything(), -Difference) %>% 
   mutate(Report_Date = as.Date(Report_Date, '%m/%d/%y'),
          Latest_Date = as.Date(Latest_Date, '%m/%d/%y')) %>% 
-  filter(Country_Region=='Peru') %>% 
+  filter(Country_Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil') & 
+           Report_Date == Latest_Date) %>% 
+  spread(Case_Type, Cases) %>% 
   arrange(desc(Report_Date))
 ```
+
+```{r}
+covid19 %>% 
+  select(-Prep_Flow_Runtime, -Province_State, -Lat, -Long) %>% 
+  select(Latest_Date, everything(), -Difference) %>% 
+  mutate(Report_Date = as.Date(Report_Date, '%m/%d/%y'),
+         Latest_Date = as.Date(Latest_Date, '%m/%d/%y')) %>% 
+  filter(Country_Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil') & 
+           Report_Date >= '2020-03-10') %>% 
+  spread(Case_Type, Cases) %>% 
+  arrange(desc(Report_Date)) %>% 
+  ggplot(aes(y = Confirmed, x = Report_Date, group=Country_Region, color=Country_Region)) +
+  geom_line(size=1) + 
+  geom_point(size=3, shape=21, fill="white") +
+  theme_minimal() 
+```
+
+
+
+
+
+
 
