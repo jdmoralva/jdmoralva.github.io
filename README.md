@@ -3,7 +3,4 @@ Web Development
 
 Notas
 
-git add .
-git add -A
-git commit -m "Coment"
-git push origin master
+https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html

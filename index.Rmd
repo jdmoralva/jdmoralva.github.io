@@ -6,9 +6,11 @@ Análisis estadístico con R
 
 # COVID-19
 
-```{r, include=FALSE, message=FALSE}
+```{r, include=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(directlabels)
+library(knitr)
+library(kableExtra)
 ```
 
 ```{r}
@@ -44,8 +46,8 @@ covid19 %>%
   spread(Case_Type, Cases) %>% 
   select(-Latest_Date) %>% 
   arrange(desc(Confirmed)) %>% 
-  left_join(
-  covid19 %>% 
+left_join(
+covid19 %>% 
   select(-Prep_Flow_Runtime, -Province_State, -Lat, -Long) %>% 
   select(Latest_Date, everything(), -Cases) %>% 
   mutate(Report_Date = as.Date(Report_Date, '%m/%d/%y'),
@@ -55,8 +57,11 @@ covid19 %>%
   spread(Case_Type, Difference) %>% 
   select(Country_Region, Confirmed) %>% 
   rename(New_Cases = Confirmed),
-  by = "Country_Region") %>% 
-  rename(Country = Country_Region)
+by = "Country_Region") %>% 
+  rename(Country = Country_Region) %>% 
+  kable() %>% 
+  kable_styling(fixed_thead = T,
+                bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
 ```{r, echo=FALSE, message=FALSE}
