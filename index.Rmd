@@ -1,5 +1,13 @@
 ---
 title: "JD Website"
+author: "Jorge David Morales"
+date: "`r Sys.Date()`"
+#output: 
+#  html_document:
+#    theme: simplex
+#    toc: true
+#    toc_depth: 2
+#    toc_float: true
 ---
 
 Análisis estadístico con R
