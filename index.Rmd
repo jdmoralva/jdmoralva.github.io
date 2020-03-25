@@ -21,7 +21,9 @@ library(knitr)
 library(kableExtra)
 ```
 
-```{r}
+Información tomada de: http://query.data.world/s/cdc5dussbvmp52xnluz6wvyntjn6am
+
+```{r, include=FALSE}
 # Internet Data
 covid19 <- read.csv("http://query.data.world/s/cdc5dussbvmp52xnluz6wvyntjn6am",
                     header = T, stringsAsFactors = F)
@@ -30,14 +32,21 @@ covid19 <- read.csv("http://query.data.world/s/cdc5dussbvmp52xnluz6wvyntjn6am",
 ```{r, echo=FALSE}
 # Ajustes Varios
 # Report Date
-names(covid19)[1]="Report_Date"
+names(covid19)[1]="Country_Region"
+names(covid19)[3]="Report_Date"
 
 # Ajustes Info Peru
 covid19 <- covid19 %>% 
+  select(Report_Date, everything()) %>% 
   mutate(Report_Date = as.Date(Report_Date, '%m/%d/%y'),
-         Cases = ifelse(Country_Region=='Peru' & Report_Date=='2020-03-20' & Case_Type =='Confirmed',263,Cases),
-         Difference = ifelse(Country_Region=='Peru' & Report_Date=='2020-03-20' & Case_Type =='Confirmed',
-                             29,Difference))
+         Cases = ifelse(Country_Region=='Peru' & Report_Date=='2020-03-20' & 
+                          Case_Type =='Confirmed',263,Cases),
+         Difference = ifelse(Country_Region=='Peru' & Report_Date=='2020-03-20' & 
+                               Case_Type =='Confirmed',29,Difference),
+         Cases = ifelse(Country_Region=='Chile' & Report_Date=='2020-03-19' & 
+                          Case_Type =='Confirmed',342,Cases),
+         Difference = ifelse(Country_Region=='Chile' & Report_Date=='2020-03-19' & 
+                               Case_Type =='Confirmed',104,Difference))
 
 covid19 %>% 
   summarise(Last_Report = max(Report_Date))
@@ -45,7 +54,7 @@ covid19 %>%
 
 ```{r, echo=FALSE}
 covid19 %>% 
-  select(-Prep_Flow_Runtime, -Province_State, -Lat, -Long) %>% 
+  select(-Prep_Flow_Runtime, -Province_State, -Lat, -Long, -Table.Names) %>% 
   select(Latest_Date, everything(), -Difference) %>% 
   mutate(Report_Date = as.Date(Report_Date, '%m/%d/%y'),
          Latest_Date = as.Date(Latest_Date, '%m/%d/%y')) %>% 
@@ -56,7 +65,7 @@ covid19 %>%
   arrange(desc(Confirmed)) %>% 
 left_join(
 covid19 %>% 
-  select(-Prep_Flow_Runtime, -Province_State, -Lat, -Long) %>% 
+  select(-Prep_Flow_Runtime, -Province_State, -Lat, -Long, -Table.Names) %>% 
   select(Latest_Date, everything(), -Cases) %>% 
   mutate(Report_Date = as.Date(Report_Date, '%m/%d/%y'),
          Latest_Date = as.Date(Latest_Date, '%m/%d/%y')) %>% 
@@ -74,7 +83,7 @@ by = "Country_Region") %>%
 
 ```{r, echo=FALSE, message=FALSE}
 p <- covid19 %>% 
-  select(-Prep_Flow_Runtime, -Province_State, -Lat, -Long) %>% 
+  select(-Prep_Flow_Runtime, -Province_State, -Lat, -Long, -Table.Names) %>% 
   select(Latest_Date, everything(), -Difference) %>% 
   mutate(Report_Date = as.Date(Report_Date, '%m/%d/%y'),
          Latest_Date = as.Date(Latest_Date, '%m/%d/%y')) %>% 
