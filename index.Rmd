@@ -10,8 +10,6 @@ date: "`r Sys.Date()`"
 #    toc_float: true
 ---
 
-Análisis estadístico con R
-
 # COVID-19
 
 ```{r, include=FALSE, message=FALSE, warning=FALSE}
@@ -32,8 +30,8 @@ covid19 <- read.csv("http://query.data.world/s/cdc5dussbvmp52xnluz6wvyntjn6am",
 ```{r, echo=FALSE}
 # Ajustes Varios
 # Report Date
-names(covid19)[1]="Country_Region"
-names(covid19)[3]="Report_Date"
+names(covid19)[1]="Table.Names"
+names(covid19)[5]="Report_Date"
 
 # Ajustes Info Peru
 covid19 <- covid19 %>% 
@@ -54,7 +52,7 @@ covid19 %>%
 
 ```{r, echo=FALSE}
 covid19 %>% 
-  select(-Prep_Flow_Runtime, -Province_State, -Lat, -Long, -Table.Names) %>% 
+  select(-Prep_Flow_Runtime, -Province_State, -Lat, -Long, -Table.Names, -Admin2, -FIPS, -Combined_Key) %>% 
   select(Latest_Date, everything(), -Difference) %>% 
   mutate(Report_Date = as.Date(Report_Date, '%m/%d/%y'),
          Latest_Date = as.Date(Latest_Date, '%m/%d/%y')) %>% 
@@ -65,7 +63,7 @@ covid19 %>%
   arrange(desc(Confirmed)) %>% 
 left_join(
 covid19 %>% 
-  select(-Prep_Flow_Runtime, -Province_State, -Lat, -Long, -Table.Names) %>% 
+  select(-Prep_Flow_Runtime, -Province_State, -Lat, -Long, -Table.Names, -Admin2, -FIPS, -Combined_Key) %>% 
   select(Latest_Date, everything(), -Cases) %>% 
   mutate(Report_Date = as.Date(Report_Date, '%m/%d/%y'),
          Latest_Date = as.Date(Latest_Date, '%m/%d/%y')) %>% 
@@ -76,6 +74,7 @@ covid19 %>%
   rename(New_Cases = Confirmed),
 by = "Country_Region") %>% 
   rename(Country = Country_Region) %>% 
+  select(-New_Cases) %>% 
   kable() %>% 
   kable_styling(fixed_thead = T,
                 bootstrap_options = c("striped", "hover", "condensed"))
@@ -102,7 +101,7 @@ p + theme(legend.position="none",
           axis.title = element_blank())
 ```
 
-```{r, echo=FALSE, message=FALSE}
+```{r, echo=FALSE, message=FALSE, include=FALSE}
 q <- covid19 %>% 
   select(-Prep_Flow_Runtime, -Province_State, -Lat, -Long) %>% 
   select(Latest_Date, everything(), -Cases) %>% 
