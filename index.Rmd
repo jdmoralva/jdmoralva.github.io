@@ -17,10 +17,11 @@ library(tidyverse)
 library(directlabels)
 library(knitr)
 library(kableExtra)
+#rmarkdown::render_site(encoding="UTF-8")
 ```
 
-Información tomada de: https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data   
-GitHub de la Universidad Johns Hopkins, US.  
+Información tomada del GitHub de la Universidad Johns Hopkins, US:   
+https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data  
 
 ```{r, include=FALSE}
 # Internet Data
@@ -81,8 +82,8 @@ covid19.jh <- covid19.jh.c %>%
          New.Cases = Confirmed - lag(Confirmed, order_by = Report.Date),
          New.Cases = ifelse(is.na(New.Cases),0,New.Cases),
          Actives = Confirmed - Recovered - Deaths,
-         Recov.Rate = ifelse(Confirmed==0,0,round(Recovered/Confirmed,3)),
-         Death.Rate = ifelse(Confirmed==0,0,round(Deaths/Confirmed,3)))
+         Recov.Rate = ifelse(Confirmed==0,0,round(Recovered/Confirmed,4)),
+         Death.Rate = ifelse(Confirmed==0,0,round(Deaths/Confirmed,4)))
 
 # Last Report Date
 Latest.Date <- max(covid19.jh$Report.Date)
@@ -100,7 +101,7 @@ covid19.jh %>%
   mutate(Death.Rate = scales::percent(Death.Rate),
          Recov.Rate = scales::percent(Recov.Rate)) %>% 
   arrange(desc(Confirmed)) %>% 
-  kable() %>% 
+  kable(align = c("crcccc")) %>% 
   kable_styling(fixed_thead = T,
                 bootstrap_options = c("striped", "hover", "condensed"))
 ```
