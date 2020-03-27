@@ -19,7 +19,8 @@ library(knitr)
 library(kableExtra)
 ```
 
-Información tomada de: http://query.data.world/s/cdc5dussbvmp52xnluz6wvyntjn6am
+Información tomada de: https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data   
+GitHub de la Universidad Johns Hopkins, US.  
 
 ```{r, include=FALSE}
 # Internet Data
@@ -27,94 +28,108 @@ covid19 <- read.csv("http://query.data.world/s/cdc5dussbvmp52xnluz6wvyntjn6am",
                     header = T, stringsAsFactors = F)
 ```
 
-```{r, echo=FALSE}
-# Ajustes Varios
-# Report Date
-names(covid19)[1]="Table.Names"
-names(covid19)[5]="Report_Date"
+```{r, include=FALSE}
+# Johns Hopkins Dataset
+covid19.jh.c <- read.csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv",
+                       header = T, sep = ",", stringsAsFactors = F)
 
-# Ajustes Info Peru
-covid19 <- covid19 %>% 
-  select(Report_Date, everything()) %>% 
-  mutate(Report_Date = as.Date(Report_Date, '%m/%d/%y'),
-         Cases = ifelse(Country_Region=='Peru' & Report_Date=='2020-03-20' & 
-                          Case_Type =='Confirmed',263,Cases),
-         Difference = ifelse(Country_Region=='Peru' & Report_Date=='2020-03-20' & 
-                               Case_Type =='Confirmed',29,Difference),
-         Cases = ifelse(Country_Region=='Chile' & Report_Date=='2020-03-19' & 
-                          Case_Type =='Confirmed',342,Cases),
-         Difference = ifelse(Country_Region=='Chile' & Report_Date=='2020-03-19' & 
-                               Case_Type =='Confirmed',104,Difference))
+covid19.jh.r <- read.csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv",
+                       header = T, sep = ",", stringsAsFactors = F)
 
-covid19 %>% 
-  summarise(Last_Report = max(Report_Date))
+covid19.jh.d <- read.csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv",
+                       header = T, sep = ",", stringsAsFactors = F)
+```
+
+```{r, include=FALSE}
+# Data Analysis
+
+# Confirmed
+covid19.jh.c <- covid19.jh.c %>% 
+  select(-c(Province.State, Lat, Long)) %>% 
+  gather(key = "Report.Date", value = "Confirmed.p", -Country.Region) %>% 
+  mutate(Report.Date = as.Date(str_remove(Report.Date, "X"), '%m.%d.%y')) %>% 
+  group_by(Country.Region, Report.Date) %>% 
+  summarise(Confirmed = sum(Confirmed.p)) %>% 
+  arrange(Report.Date) 
+
+# Recovered
+covid19.jh.r <- covid19.jh.r %>% 
+  select(-c(Province.State, Lat, Long)) %>% 
+  gather(key = "Report.Date", value = "Recovered.p", -Country.Region) %>% 
+  mutate(Report.Date = as.Date(str_remove(Report.Date, "X"), '%m.%d.%y')) %>% 
+  group_by(Country.Region, Report.Date) %>% 
+  summarise(Recovered = sum(Recovered.p)) %>% 
+  arrange(Report.Date)
+
+# Deaths
+covid19.jh.d <- covid19.jh.d %>% 
+  select(-c(Province.State, Lat, Long)) %>% 
+  gather(key = "Report.Date", value = "Deaths.p", -Country.Region) %>% 
+  mutate(Report.Date = as.Date(str_remove(Report.Date, "X"), '%m.%d.%y')) %>% 
+  group_by(Country.Region, Report.Date) %>% 
+  summarise(Deaths = sum(Deaths.p)) %>% 
+  arrange(Report.Date)
+
+# Consolidado
+covid19.jh <- covid19.jh.c %>% 
+  left_join(covid19.jh.r, by = c("Country.Region", "Report.Date")) %>%
+  left_join(covid19.jh.d, by = c("Country.Region", "Report.Date")) %>% 
+  select(Report.Date, everything()) %>% 
+  group_by(Country.Region) %>% 
+  mutate(Confirmed = ifelse(Country.Region=='Peru' & Report.Date=='2020-03-20',263,Confirmed),
+         Confirmed = ifelse(Country.Region=='Chile' & Report.Date=='2020-03-19',342,Confirmed),
+         New.Cases = Confirmed - lag(Confirmed, order_by = Report.Date),
+         New.Cases = ifelse(is.na(New.Cases),0,New.Cases),
+         Actives = Confirmed - Recovered - Deaths,
+         Recov.Rate = ifelse(Confirmed==0,0,round(Recovered/Confirmed,3)),
+         Death.Rate = ifelse(Confirmed==0,0,round(Deaths/Confirmed,3)))
+
+# Last Report Date
+Latest.Date <- max(covid19.jh$Report.Date)
 ```
 
 ```{r, echo=FALSE}
-covid19 %>% 
-  select(-Prep_Flow_Runtime, -Province_State, -Lat, -Long, -Table.Names, -Admin2, -FIPS, -Combined_Key) %>% 
-  select(Latest_Date, everything(), -Difference) %>% 
-  mutate(Report_Date = as.Date(Report_Date, '%m/%d/%y'),
-         Latest_Date = as.Date(Latest_Date, '%m/%d/%y')) %>% 
-  filter(Country_Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil','Venezuela') & 
-           Report_Date == Latest_Date) %>% 
-  spread(Case_Type, Cases) %>% 
-  select(-Latest_Date) %>% 
+print(paste0("Fecha de último reporte: ", Latest.Date), quote = F)
+```
+
+```{r, echo=FALSE}
+# Resumen
+covid19.jh %>% 
+  filter(Country.Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil','Venezuela') &
+           Report.Date == Latest.Date) %>% 
+  mutate(Death.Rate = scales::percent(Death.Rate),
+         Recov.Rate = scales::percent(Recov.Rate)) %>% 
   arrange(desc(Confirmed)) %>% 
-left_join(
-covid19 %>% 
-  select(-Prep_Flow_Runtime, -Province_State, -Lat, -Long, -Table.Names, -Admin2, -FIPS, -Combined_Key) %>% 
-  select(Latest_Date, everything(), -Cases) %>% 
-  mutate(Report_Date = as.Date(Report_Date, '%m/%d/%y'),
-         Latest_Date = as.Date(Latest_Date, '%m/%d/%y')) %>% 
-  filter(Country_Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil','Venezuela') & 
-           Report_Date == Latest_Date) %>% 
-  spread(Case_Type, Difference) %>% 
-  select(Country_Region, Confirmed) %>% 
-  rename(New_Cases = Confirmed),
-by = "Country_Region") %>% 
-  rename(Country = Country_Region) %>% 
-  select(-New_Cases) %>% 
   kable() %>% 
   kable_styling(fixed_thead = T,
                 bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
 ```{r, echo=FALSE, message=FALSE}
-p <- covid19 %>% 
-  select(-Prep_Flow_Runtime, -Province_State, -Lat, -Long, -Table.Names) %>% 
-  select(Latest_Date, everything(), -Difference) %>% 
-  mutate(Report_Date = as.Date(Report_Date, '%m/%d/%y'),
-         Latest_Date = as.Date(Latest_Date, '%m/%d/%y')) %>% 
-  filter(Country_Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil','Venezuela') & 
-           Report_Date >= '2020-03-10') %>% 
-  spread(Case_Type, Cases) %>% 
-  arrange(desc(Report_Date)) %>% 
-  ggplot(aes(y = Confirmed, x = Report_Date, group=Country_Region, color=Country_Region)) +
+p <- covid19.jh %>% 
+  filter(Country.Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil','Venezuela') & 
+           Report.Date >= '2020-03-10') %>% 
+  arrange(desc(Report.Date)) %>% 
+  ggplot(aes(y = Confirmed, x = Report.Date, group=Country.Region, color=Country.Region)) +
   geom_line(size=1) + 
   geom_point(size=3, shape=21, fill="white") +
   ggtitle("Tendencia Exponencial COVID-19") +
-  geom_dl(aes(label = Country_Region), method = list("last.points",cex=0.8,vjust=-0.8, hjust=0.5)) +
+  geom_dl(aes(label = Country.Region), method = list("last.points",cex=0.8,vjust=-0.8, hjust=0.5)) +
   theme_minimal() 
 
 p + theme(legend.position="none",
           axis.title = element_blank())
 ```
 
-```{r, echo=FALSE, message=FALSE, include=FALSE}
-q <- covid19 %>% 
-  select(-Prep_Flow_Runtime, -Province_State, -Lat, -Long) %>% 
-  select(Latest_Date, everything(), -Cases) %>% 
-  mutate(Report_Date = as.Date(Report_Date, '%m/%d/%y'),
-         Latest_Date = as.Date(Latest_Date, '%m/%d/%y')) %>% 
-  filter(Country_Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil','Venezuela') & 
-           Report_Date >= '2020-03-10') %>% 
-  spread(Case_Type, Difference) %>% 
-  arrange(desc(Report_Date)) %>% 
-  ggplot(aes(x=Report_Date, y=Confirmed, fill=Country_Region)) + 
+```{r, echo=FALSE, message=FALSE}
+q <- covid19.jh %>% 
+  filter(Country.Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil','Venezuela') & 
+           Report.Date >= '2020-03-10') %>% 
+  arrange(desc(Report.Date)) %>% 
+  ggplot(aes(x=Report.Date, y=New.Cases, fill=Country.Region)) + 
   geom_bar(stat="identity", position=position_dodge()) +
   geom_smooth() +
-  facet_wrap(~Country_Region) +
+  facet_wrap(~Country.Region) +
   ggtitle("Nuevos Casos Confirmados") +
   theme_minimal()
  
