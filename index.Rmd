@@ -13,6 +13,7 @@ date: "`r Sys.Date()`"
 # COVID-19
 
 ```{r, include=FALSE, message=FALSE, warning=FALSE}
+# Enviroment
 library(tidyverse)
 library(directlabels)
 library(knitr)
@@ -21,12 +22,6 @@ library(kableExtra)
 
 Información tomada del GitHub de la Universidad Johns Hopkins, US:   
 https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data  
-
-```{r, include=FALSE}
-# Internet Data
-covid19 <- read.csv("http://query.data.world/s/cdc5dussbvmp52xnluz6wvyntjn6am",
-                    header = T, stringsAsFactors = F)
-```
 
 ```{r, include=FALSE}
 # Johns Hopkins Dataset
@@ -89,7 +84,7 @@ Latest.Date <- max(covid19.jh$Report.Date)
 ```
 
 ```{r, echo=FALSE}
-print(paste0("Fecha de último reporte: ", Latest.Date), quote = F)
+paste0("Fecha de último reporte: ", Latest.Date)
 ```
 
 ```{r, echo=FALSE}
@@ -138,9 +133,7 @@ q + theme(legend.position = "none",
           axis.text.x = element_text(angle = 90, hjust = 0)) 
 ```
 
-```{r, include=FALSE}
-rmarkdown::render_site(encoding="UTF-8")
-```
+
 
 
 
