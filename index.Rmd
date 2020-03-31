@@ -107,8 +107,8 @@ p <- covid19.jh %>%
   arrange(desc(Report.Date)) %>% 
   ggplot(aes(y = Confirmed, x = Report.Date, group=Country.Region, color=Country.Region)) +
   geom_line(size=1) + 
-  geom_point(size=3, shape=21, fill="white") +
-  ggtitle("Tendencia Exponencial COVID-19") +
+  #geom_point(size=3, shape=21, fill="white") +
+  ggtitle("Tendencia a través del tiempo COVID-19") +
   geom_dl(aes(label = Country.Region), method = list("last.points",cex=0.8,vjust=-0.8, hjust=0.5)) +
   theme_minimal() 
 
@@ -125,13 +125,39 @@ q <- covid19.jh %>%
   geom_bar(stat="identity", position=position_dodge()) +
   geom_smooth() +
   facet_wrap(~Country.Region) +
-  ggtitle("Nuevos Casos Confirmados") +
+  ggtitle("Nuevos Casos Confirmados de COVID-19") +
   theme_minimal()
  
 q + theme(legend.position = "none",
           axis.title = element_blank(),
           axis.text.x = element_text(angle = 90, hjust = 0)) 
 ```
+
+```{r, echo=FALSE, message=FALSE}
+covid19.jh %>% 
+  filter(Confirmed > 0 & Country.Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil','Venezuela')) %>% 
+  group_by(Country.Region) %>% 
+  arrange(Country.Region, Report.Date) %>% 
+  mutate(Dia = row_number(Country.Region)) %>% 
+  select(Report.Date, Country.Region, Dia, everything()) %>% 
+  ggplot(aes(y = Confirmed, x = Dia, group=Country.Region, color=Country.Region)) +
+  geom_line(size=1) + 
+  #geom_point(size=3, shape=21, fill="white") +
+  ggtitle("Evolución en días después del primer contagio de COVID-19") +
+  geom_dl(aes(label = Country.Region), method = list("last.points",cex=0.8,vjust=-0.8, hjust=0.5)) +
+  theme_minimal() + 
+  theme(legend.position="none",
+          axis.title = element_blank())
+```
+
+
+
+
+
+
+
+
+
 
 
 
