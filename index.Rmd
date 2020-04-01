@@ -90,7 +90,7 @@ paste0("Fecha de último reporte: ", Latest.Date)
 ```{r, echo=FALSE}
 # Resumen
 covid19.jh %>% 
-  filter(Country.Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil','Venezuela') &
+  filter(Country.Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil','Bolivia') &
            Report.Date == Latest.Date) %>% 
   mutate(Death.Rate = scales::percent(Death.Rate),
          Recov.Rate = scales::percent(Recov.Rate)) %>% 
@@ -102,13 +102,13 @@ covid19.jh %>%
 
 ```{r, echo=FALSE, message=FALSE}
 p <- covid19.jh %>% 
-  filter(Country.Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil','Venezuela') & 
+  filter(Country.Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil','Bolivia') & 
            Report.Date >= '2020-03-10') %>% 
   arrange(desc(Report.Date)) %>% 
   ggplot(aes(y = Confirmed, x = Report.Date, group=Country.Region, color=Country.Region)) +
   geom_line(size=1) + 
   #geom_point(size=3, shape=21, fill="white") +
-  ggtitle("Tendencia a través del tiempo COVID-19") +
+  ggtitle("Tendencia a través del tiempo del COVID-19") +
   geom_dl(aes(label = Country.Region), method = list("last.points",cex=0.8,vjust=-0.8, hjust=0.5)) +
   theme_minimal() 
 
@@ -118,14 +118,14 @@ p + theme(legend.position="none",
 
 ```{r, echo=FALSE, message=FALSE}
 q <- covid19.jh %>% 
-  filter(Country.Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil','Venezuela') & 
+  filter(Country.Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil','Bolivia') & 
            Report.Date >= '2020-03-10') %>% 
   arrange(desc(Report.Date)) %>% 
   ggplot(aes(x=Report.Date, y=New.Cases, fill=Country.Region)) + 
   geom_bar(stat="identity", position=position_dodge()) +
   geom_smooth() +
   facet_wrap(~Country.Region) +
-  ggtitle("Nuevos Casos Confirmados de COVID-19") +
+  ggtitle("Evolución de los nuevos Casos Confirmados de COVID-19") +
   theme_minimal()
  
 q + theme(legend.position = "none",
@@ -135,7 +135,7 @@ q + theme(legend.position = "none",
 
 ```{r, echo=FALSE, message=FALSE}
 covid19.jh %>% 
-  filter(Confirmed > 0 & Country.Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil','Venezuela')) %>% 
+  filter(Confirmed > 0 & Country.Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil','Bolivia')) %>% 
   group_by(Country.Region) %>% 
   arrange(Country.Region, Report.Date) %>% 
   mutate(Dia = row_number(Country.Region)) %>% 
@@ -143,15 +143,46 @@ covid19.jh %>%
   ggplot(aes(y = Confirmed, x = Dia, group=Country.Region, color=Country.Region)) +
   geom_line(size=1) + 
   #geom_point(size=3, shape=21, fill="white") +
-  ggtitle("Evolución en días después del primer contagio de COVID-19") +
+  ggtitle("Evolución de casos confirmados días después del primer contagio de COVID-19") +
   geom_dl(aes(label = Country.Region), method = list("last.points",cex=0.8,vjust=-0.8, hjust=0.5)) +
   theme_minimal() + 
   theme(legend.position="none",
           axis.title = element_blank())
 ```
 
+```{r, echo=FALSE, message=FALSE}
+covid19.jh %>% 
+  filter(Confirmed > 0 & Country.Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil','Bolivia')) %>% 
+  group_by(Country.Region) %>% 
+  arrange(Country.Region, Report.Date) %>% 
+  mutate(Dia = row_number(Country.Region)) %>% 
+  select(Report.Date, Country.Region, Dia, everything()) %>% 
+  ggplot(aes(y = Death.Rate, x = Dia, group=Country.Region, color=Country.Region)) +
+  geom_line(size=1) + 
+  #geom_point(size=3, shape=21, fill="white") +
+  ggtitle("Evolución de la tasa de mortalidad días despúes del primer contagio de COVID-19") +
+  geom_dl(aes(label = Country.Region), method = list("last.points",cex=0.8,vjust=-0.8, hjust=0.5)) +
+  theme_minimal() + 
+  theme(legend.position="none",
+          axis.title = element_blank())
+```
 
-
+```{r, echo=FALSE, message=FALSE}
+covid19.jh %>% 
+  filter(Confirmed > 0 & Country.Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil','Bolivia')) %>% 
+  group_by(Country.Region) %>% 
+  arrange(Country.Region, Report.Date) %>% 
+  mutate(Dia = row_number(Country.Region)) %>% 
+  select(Report.Date, Country.Region, Dia, everything()) %>% 
+  ggplot(aes(y = Recov.Rate, x = Dia, group=Country.Region, color=Country.Region)) +
+  geom_line(size=1) + 
+  #geom_point(size=3, shape=21, fill="white") +
+  ggtitle("Evolución de la tasa de recupero días despúes del primer contagio de COVID-19") +
+  geom_dl(aes(label = Country.Region), method = list("last.points",cex=0.8,vjust=-0.8, hjust=0.5)) +
+  theme_minimal() + 
+  theme(legend.position="none",
+          axis.title = element_blank())
+```
 
 
 
