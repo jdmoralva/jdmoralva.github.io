@@ -125,7 +125,7 @@ q <- covid19.jh %>%
   geom_bar(stat="identity", position=position_dodge()) +
   geom_smooth() +
   facet_wrap(~Country.Region) +
-  ggtitle("Evolución de los nuevos Casos Confirmados de COVID-19") +
+  ggtitle("Nuevos casos confirmados de COVID-19") +
   theme_minimal()
  
 q + theme(legend.position = "none",
@@ -143,7 +143,7 @@ covid19.jh %>%
   ggplot(aes(y = Confirmed, x = Dia, group=Country.Region, color=Country.Region)) +
   geom_line(size=1) + 
   #geom_point(size=3, shape=21, fill="white") +
-  ggtitle("Evolución de casos confirmados días después del primer contagio de COVID-19") +
+  ggtitle("Casos confirmados días después del primer contagio de COVID-19") +
   geom_dl(aes(label = Country.Region), method = list("last.points",cex=0.8,vjust=-0.8, hjust=0.5)) +
   theme_minimal() + 
   theme(legend.position="none",
@@ -160,7 +160,7 @@ covid19.jh %>%
   ggplot(aes(y = Death.Rate, x = Dia, group=Country.Region, color=Country.Region)) +
   geom_line(size=1) + 
   #geom_point(size=3, shape=21, fill="white") +
-  ggtitle("Evolución de la tasa de mortalidad días despúes del primer contagio de COVID-19") +
+  ggtitle("Tasa de mortalidad días despúes del primer contagio de COVID-19") +
   geom_dl(aes(label = Country.Region), method = list("last.points",cex=0.8,vjust=-0.8, hjust=0.5)) +
   theme_minimal() + 
   theme(legend.position="none",
@@ -177,14 +177,29 @@ covid19.jh %>%
   ggplot(aes(y = Recov.Rate, x = Dia, group=Country.Region, color=Country.Region)) +
   geom_line(size=1) + 
   #geom_point(size=3, shape=21, fill="white") +
-  ggtitle("Evolución de la tasa de recupero días despúes del primer contagio de COVID-19") +
+  ggtitle("Tasa de recupero días despúes del primer contagio de COVID-19") +
   geom_dl(aes(label = Country.Region), method = list("last.points",cex=0.8,vjust=-0.8, hjust=0.5)) +
   theme_minimal() + 
   theme(legend.position="none",
           axis.title = element_blank())
 ```
 
-
+```{r, echo=FALSE, message=FALSE}
+covid19.jh %>% 
+  filter(Confirmed > 0 & Country.Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil','Bolivia')) %>% 
+  group_by(Country.Region) %>% 
+  arrange(Country.Region, Report.Date) %>% 
+  mutate(Dia = row_number(Country.Region)) %>% 
+  select(Report.Date, Country.Region, Dia, everything()) %>% 
+  ggplot(aes(y = Actives, x = Dia, group=Country.Region, color=Country.Region)) +
+  geom_line(size=1) + 
+  #geom_point(size=3, shape=21, fill="white") +
+  ggtitle("Casos activos días después del primer contagio de COVID-19") +
+  geom_dl(aes(label = Country.Region), method = list("last.points",cex=0.8,vjust=-0.8, hjust=0.5)) +
+  theme_minimal() + 
+  theme(legend.position="none",
+          axis.title = element_blank())
+```
 
 
 
