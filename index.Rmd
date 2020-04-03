@@ -104,11 +104,11 @@ covid19.jh %>%
   mutate(Death.Rate = scales::percent(Death.Rate),
          Recov.Rate = scales::percent(Recov.Rate)) %>% 
   select(Report.Date, Country.Region, Confirmed, Recovered, Recov.Rate, Deaths, Death.Rate, Actives) %>% 
-  arrange(desc(Confirmed)) %>% 
-  kable(align = c("crcccc")) %>% 
+  arrange(desc(Actives)) %>% 
+  kable(align = c("crcccc"), format.args = list(decimal.mark = '.', big.mark = ",")) %>% 
   kable_styling(fixed_thead = T,
                 bootstrap_options = c("striped", "hover", "condensed"),
-                full_width = F, position = "left")
+                full_width = T, position = "left")
 ```
 
 ```{r, echo=FALSE}
@@ -118,12 +118,12 @@ covid19.jh %>%
            Report.Date == Latest.Date) %>% 
   mutate(Two.days.var = scales::percent(Two.days.var),
          Five.days.var = scales::percent(Five.days.var)) %>% 
-  select(Report.Date, Country.Region, New.Cases, Two.days.var, Five.days.var, New.Deaths) %>% 
-  arrange(desc(New.Cases)) %>% 
-  kable(align = c("crcccc")) %>% 
+  select(Report.Date, Country.Region, New.Cases, Two.days.var, Five.days.var, New.Deaths, Actives) %>% 
+  arrange(desc(Actives)) %>% 
+  kable(align = c("crcccc"), format.args = list(decimal.mark = '.', big.mark = ",")) %>% 
   kable_styling(fixed_thead = T,
                 bootstrap_options = c("striped", "hover", "condensed"),
-                full_width = F, position = "left")
+                full_width = T, position = "left")
 ```
 
 ```{r, echo=FALSE, message=FALSE}
@@ -238,11 +238,11 @@ covid19.jh %>%
   mutate(Death.Rate = scales::percent(Death.Rate),
          Recov.Rate = scales::percent(Recov.Rate)) %>% 
   select(Report.Date, Country.Region, Confirmed, Recovered, Recov.Rate, Deaths, Death.Rate, Actives) %>% 
-  arrange(desc(Confirmed)) %>% 
-  kable(align = c("crcccc")) %>% 
+  arrange(desc(Actives)) %>% 
+  kable(align = c("crcccc"), format.args = list(decimal.mark = '.', big.mark = ",")) %>% 
   kable_styling(fixed_thead = T,
                 bootstrap_options = c("striped", "hover", "condensed"),
-                full_width = F, position = "left")
+                full_width = T, position = "left")
 ```
 
 ```{r, echo=FALSE}
@@ -252,12 +252,12 @@ covid19.jh %>%
            Report.Date == Latest.Date) %>% 
   mutate(Two.days.var = scales::percent(Two.days.var),
          Five.days.var = scales::percent(Five.days.var)) %>% 
-  select(Report.Date, Country.Region, New.Cases, Two.days.var, Five.days.var, New.Deaths) %>% 
-  arrange(desc(New.Cases)) %>% 
-  kable(align = c("crcccc")) %>% 
+  select(Report.Date, Country.Region, New.Cases, Two.days.var, Five.days.var, New.Deaths, Actives) %>% 
+  arrange(desc(Actives)) %>% 
+  kable(align = c("crcccc"), format.args = list(decimal.mark = '.', big.mark = ",")) %>% 
   kable_styling(fixed_thead = T,
                 bootstrap_options = c("striped", "hover", "condensed"),
-                full_width = F, position = "left")
+                full_width = T, position = "left")
 ```
 
 ```{r, echo=FALSE, message=FALSE}
