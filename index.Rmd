@@ -1,6 +1,6 @@
 ---
 title: "JD Website"
-author: "Jorge David Morales /n jdmoralva@gmail.com"
+author: "Jorge David Morales"
 date: "`r Sys.Date()`"
 #output: 
 #  html_document:
@@ -79,6 +79,8 @@ covid19.jh <- covid19.jh.c %>%
          New.Deaths = ifelse(is.na(New.Deaths),0,New.Deaths),
          Two.days.inf.rate = Confirmed / lag(Confirmed, order_by = Report.Date, n = 2) -1,
          Two.days.inf.rate = ifelse(is.na(Two.days.inf.rate),0,Two.days.inf.rate),
+         Five.days.inf.rate = Confirmed / lag(Confirmed, order_by = Report.Date, n = 5) -1,
+         Five.days.inf.rate = ifelse(is.na(Five.days.inf.rate),0,Five.days.inf.rate),
          Actives = Confirmed - Recovered - Deaths,
          Recov.Rate = ifelse(Confirmed==0,0,round(Recovered/Confirmed,4)),
          Death.Rate = ifelse(Confirmed==0,0,round(Deaths/Confirmed,4)))
@@ -98,8 +100,10 @@ covid19.jh %>%
            Report.Date == Latest.Date) %>% 
   mutate(Death.Rate = scales::percent(Death.Rate),
          Recov.Rate = scales::percent(Recov.Rate),
-         Two.days.inf.rate = scales::percent(Two.days.inf.rate)) %>% 
-  select(Report.Date, Country.Region, Confirmed, Recovered, Deaths, Actives, Two.days.inf.rate) %>% 
+         Two.days.inf.rate = scales::percent(Two.days.inf.rate),
+         Five.days.inf.rate = scales::percent(Five.days.inf.rate)) %>% 
+  select(Report.Date, Country.Region, Confirmed, Recovered, Deaths, Actives, 
+         Two.days.inf.rate, Five.days.inf.rate) %>% 
   arrange(desc(Confirmed)) %>% 
   kable(align = c("crcccc")) %>% 
   kable_styling(fixed_thead = T,
@@ -232,8 +236,10 @@ covid19.jh %>%
            Report.Date == Latest.Date) %>% 
   mutate(Death.Rate = scales::percent(Death.Rate),
          Recov.Rate = scales::percent(Recov.Rate),
-         Two.days.inf.rate = scales::percent(Two.days.inf.rate)) %>% 
-  select(Report.Date, Country.Region, Confirmed, Recovered, Deaths, Actives, Two.days.inf.rate) %>% 
+         Two.days.inf.rate = scales::percent(Two.days.inf.rate),
+         Five.days.inf.rate = scales::percent(Five.days.inf.rate)) %>% 
+  select(Report.Date, Country.Region, Confirmed, Recovered, Deaths, Actives, 
+         Two.days.inf.rate, Five.days.inf.rate) %>% 
   arrange(desc(Confirmed)) %>% 
   kable(align = c("crcccc")) %>% 
   kable_styling(fixed_thead = T,
