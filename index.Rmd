@@ -42,7 +42,8 @@ covid19.jh.d <- read.csv("https://raw.githubusercontent.com/CSSEGISandData/COVID
 covid19.jh.c <- covid19.jh.c %>% 
   select(-c(Province.State, Lat, Long)) %>% 
   gather(key = "Report.Date", value = "Confirmed.p", -Country.Region) %>% 
-  mutate(Report.Date = as.Date(str_remove(Report.Date, "X"), '%m.%d.%y')) %>% 
+  mutate(Report.Date = as.Date(str_remove(Report.Date, "X"), '%m.%d.%y'),
+         Country.Region = ifelse(Country.Region=='United Kingdom','UK',Country.Region)) %>% 
   group_by(Country.Region, Report.Date) %>% 
   summarise(Confirmed = sum(Confirmed.p)) %>% 
   arrange(Report.Date) 
@@ -51,7 +52,8 @@ covid19.jh.c <- covid19.jh.c %>%
 covid19.jh.r <- covid19.jh.r %>% 
   select(-c(Province.State, Lat, Long)) %>% 
   gather(key = "Report.Date", value = "Recovered.p", -Country.Region) %>% 
-  mutate(Report.Date = as.Date(str_remove(Report.Date, "X"), '%m.%d.%y')) %>% 
+  mutate(Report.Date = as.Date(str_remove(Report.Date, "X"), '%m.%d.%y'),
+         Country.Region = ifelse(Country.Region=='United Kingdom','UK',Country.Region)) %>% 
   group_by(Country.Region, Report.Date) %>% 
   summarise(Recovered = sum(Recovered.p)) %>% 
   arrange(Report.Date)
@@ -60,7 +62,8 @@ covid19.jh.r <- covid19.jh.r %>%
 covid19.jh.d <- covid19.jh.d %>% 
   select(-c(Province.State, Lat, Long)) %>% 
   gather(key = "Report.Date", value = "Deaths.p", -Country.Region) %>% 
-  mutate(Report.Date = as.Date(str_remove(Report.Date, "X"), '%m.%d.%y')) %>% 
+  mutate(Report.Date = as.Date(str_remove(Report.Date, "X"), '%m.%d.%y'),
+         Country.Region = ifelse(Country.Region=='United Kingdom','UK',Country.Region)) %>% 
   group_by(Country.Region, Report.Date) %>% 
   summarise(Deaths = sum(Deaths.p)) %>% 
   arrange(Report.Date)
@@ -77,10 +80,10 @@ covid19.jh <- covid19.jh.c %>%
          New.Cases = ifelse(is.na(New.Cases),0,New.Cases),
          New.Deaths = Deaths - lag(Deaths, order_by = Report.Date),
          New.Deaths = ifelse(is.na(New.Deaths),0,New.Deaths),
-         Two.days.inf.rate = Confirmed / lag(Confirmed, order_by = Report.Date, n = 2) -1,
-         Two.days.inf.rate = ifelse(is.na(Two.days.inf.rate),0,Two.days.inf.rate),
-         Five.days.inf.rate = Confirmed / lag(Confirmed, order_by = Report.Date, n = 5) -1,
-         Five.days.inf.rate = ifelse(is.na(Five.days.inf.rate),0,Five.days.inf.rate),
+         Two.days.var = Confirmed / lag(Confirmed, order_by = Report.Date, n = 2) -1,
+         Two.days.var = ifelse(is.na(Two.days.var),0,Two.days.var),
+         Five.days.var = Confirmed / lag(Confirmed, order_by = Report.Date, n = 5) -1,
+         Five.days.var = ifelse(is.na(Five.days.var),0,Five.days.var),
          Actives = Confirmed - Recovered - Deaths,
          Recov.Rate = ifelse(Confirmed==0,0,round(Recovered/Confirmed,4)),
          Death.Rate = ifelse(Confirmed==0,0,round(Deaths/Confirmed,4)))
@@ -99,11 +102,8 @@ covid19.jh %>%
   filter(Country.Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil','Bolivia') &
            Report.Date == Latest.Date) %>% 
   mutate(Death.Rate = scales::percent(Death.Rate),
-         Recov.Rate = scales::percent(Recov.Rate),
-         Two.days.inf.rate = scales::percent(Two.days.inf.rate),
-         Five.days.inf.rate = scales::percent(Five.days.inf.rate)) %>% 
-  select(Report.Date, Country.Region, Confirmed, Recovered, Deaths, Actives, 
-         Two.days.inf.rate, Five.days.inf.rate) %>% 
+         Recov.Rate = scales::percent(Recov.Rate)) %>% 
+  select(Report.Date, Country.Region, Confirmed, Recovered, Recov.Rate, Deaths, Death.Rate, Actives) %>% 
   arrange(desc(Confirmed)) %>% 
   kable(align = c("crcccc")) %>% 
   kable_styling(fixed_thead = T,
@@ -116,9 +116,9 @@ covid19.jh %>%
 covid19.jh %>% 
   filter(Country.Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil','Bolivia') &
            Report.Date == Latest.Date) %>% 
-  mutate(Death.Rate = scales::percent(Death.Rate),
-         Recov.Rate = scales::percent(Recov.Rate)) %>% 
-  select(Report.Date, Country.Region, New.Cases, New.Deaths, Death.Rate, Recov.Rate) %>% 
+  mutate(Two.days.var = scales::percent(Two.days.var),
+         Five.days.var = scales::percent(Five.days.var)) %>% 
+  select(Report.Date, Country.Region, New.Cases, Two.days.var, Five.days.var, New.Deaths) %>% 
   arrange(desc(New.Cases)) %>% 
   kable(align = c("crcccc")) %>% 
   kable_styling(fixed_thead = T,
@@ -226,20 +226,18 @@ covid19.jh %>%
   theme(legend.position="none",
           axis.title = element_blank())
 ```
-
+   
+   
 COVID-19 En el mundo:
 
 ```{r, echo=FALSE}
 # Resumen
 covid19.jh %>% 
-  filter(Country.Region %in% c('US','Spain','Italy','United Kingdom','France','Serbia') &
+  filter(Country.Region %in% c('US','Spain','Italy','UK','France','Serbia') &
            Report.Date == Latest.Date) %>% 
   mutate(Death.Rate = scales::percent(Death.Rate),
-         Recov.Rate = scales::percent(Recov.Rate),
-         Two.days.inf.rate = scales::percent(Two.days.inf.rate),
-         Five.days.inf.rate = scales::percent(Five.days.inf.rate)) %>% 
-  select(Report.Date, Country.Region, Confirmed, Recovered, Deaths, Actives, 
-         Two.days.inf.rate, Five.days.inf.rate) %>% 
+         Recov.Rate = scales::percent(Recov.Rate)) %>% 
+  select(Report.Date, Country.Region, Confirmed, Recovered, Recov.Rate, Deaths, Death.Rate, Actives) %>% 
   arrange(desc(Confirmed)) %>% 
   kable(align = c("crcccc")) %>% 
   kable_styling(fixed_thead = T,
@@ -250,11 +248,11 @@ covid19.jh %>%
 ```{r, echo=FALSE}
 # Resumen
 covid19.jh %>% 
-  filter(Country.Region %in% c('US','Spain','Italy','United Kingdom','France','Serbia') &
+  filter(Country.Region %in% c('US','Spain','Italy','UK','France','Serbia') &
            Report.Date == Latest.Date) %>% 
-  mutate(Death.Rate = scales::percent(Death.Rate),
-         Recov.Rate = scales::percent(Recov.Rate)) %>% 
-  select(Report.Date, Country.Region, New.Cases, New.Deaths, Death.Rate, Recov.Rate) %>% 
+  mutate(Two.days.var = scales::percent(Two.days.var),
+         Five.days.var = scales::percent(Five.days.var)) %>% 
+  select(Report.Date, Country.Region, New.Cases, Two.days.var, Five.days.var, New.Deaths) %>% 
   arrange(desc(New.Cases)) %>% 
   kable(align = c("crcccc")) %>% 
   kable_styling(fixed_thead = T,
@@ -264,7 +262,7 @@ covid19.jh %>%
 
 ```{r, echo=FALSE, message=FALSE}
 covid19.jh %>% 
-  filter(Confirmed > 0 & Country.Region %in% c('US','Spain','Italy','United Kingdom','France','Serbia')) %>% 
+  filter(Confirmed > 0 & Country.Region %in% c('US','Spain','Italy','UK','France','Serbia')) %>% 
   group_by(Country.Region) %>% 
   arrange(Country.Region, Report.Date) %>% 
   mutate(Dia = row_number(Country.Region)) %>% 
@@ -281,7 +279,7 @@ covid19.jh %>%
 
 ```{r, echo=FALSE, message=FALSE}
 covid19.jh %>% 
-  filter(Confirmed > 0 & Country.Region %in% c('US','Spain','Italy','United Kingdom','France','Serbia')) %>% 
+  filter(Confirmed > 0 & Country.Region %in% c('US','Spain','Italy','UK','France','Serbia')) %>% 
   group_by(Country.Region) %>% 
   arrange(Country.Region, Report.Date) %>% 
   mutate(Dia = row_number(Country.Region)) %>% 
@@ -298,7 +296,7 @@ covid19.jh %>%
 
 ```{r, echo=FALSE, message=FALSE}
 covid19.jh %>% 
-  filter(Confirmed > 0 & Country.Region %in% c('US','Spain','Italy','United Kingdom','France','Serbia')) %>% 
+  filter(Confirmed > 0 & Country.Region %in% c('US','Spain','Italy','UK','France','Serbia')) %>% 
   group_by(Country.Region) %>% 
   arrange(Country.Region, Report.Date) %>% 
   mutate(Dia = row_number(Country.Region)) %>% 
