@@ -84,6 +84,8 @@ covid19.jh <- covid19.jh.c %>%
          Two.days.var = ifelse(is.na(Two.days.var),0,Two.days.var),
          Five.days.var = Confirmed / lag(Confirmed, order_by = Report.Date, n = 5) -1,
          Five.days.var = ifelse(is.na(Five.days.var),0,Five.days.var),
+         Deaths.var = Deaths / lag(Deaths, order_by = Report.Date, n = 1) -1,
+         Deaths.var = ifelse(is.na(Deaths.var),0,Deaths.var),
          Actives = Confirmed - Recovered - Deaths,
          Recov.Rate = ifelse(Confirmed==0,0,round(Recovered/Confirmed,4)),
          Death.Rate = ifelse(Confirmed==0,0,round(Deaths/Confirmed,4)))
@@ -117,8 +119,10 @@ covid19.jh %>%
   filter(Country.Region %in% c('Peru','Ecuador','Colombia','Chile','Brazil','Bolivia') &
            Report.Date == Latest.Date) %>% 
   mutate(Two.days.var = scales::percent(Two.days.var),
-         Five.days.var = scales::percent(Five.days.var)) %>% 
-  select(Report.Date, Country.Region, Confirmed, New.Cases, Two.days.var, Five.days.var, New.Deaths) %>% 
+         Five.days.var = scales::percent(Five.days.var),
+         Deaths.var = scales::percent(Deaths.var)) %>% 
+  select(Report.Date, Country.Region, Confirmed, New.Cases, Two.days.var, Five.days.var, 
+         New.Deaths, Deaths.var) %>% 
   arrange(desc(Confirmed)) %>% 
   kable(align = c("crcccc"), format.args = list(decimal.mark = '.', big.mark = ",")) %>% 
   kable_styling(fixed_thead = T,
@@ -251,8 +255,10 @@ covid19.jh %>%
   filter(Country.Region %in% c('US','Spain','Italy','UK','France','Serbia') &
            Report.Date == Latest.Date) %>% 
   mutate(Two.days.var = scales::percent(Two.days.var),
-         Five.days.var = scales::percent(Five.days.var)) %>% 
-  select(Report.Date, Country.Region, Confirmed, New.Cases, Two.days.var, Five.days.var, New.Deaths) %>% 
+         Five.days.var = scales::percent(Five.days.var),
+         Deaths.var = scales::percent(Deaths.var)) %>% 
+  select(Report.Date, Country.Region, Confirmed, New.Cases, Two.days.var, Five.days.var, 
+         New.Deaths, Deaths.var) %>% 
   arrange(desc(Confirmed)) %>% 
   kable(align = c("crcccc"), format.args = list(decimal.mark = '.', big.mark = ",")) %>% 
   kable_styling(fixed_thead = T,
