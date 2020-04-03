@@ -104,7 +104,7 @@ covid19.jh %>%
   mutate(Death.Rate = scales::percent(Death.Rate),
          Recov.Rate = scales::percent(Recov.Rate)) %>% 
   select(Report.Date, Country.Region, Confirmed, Recovered, Recov.Rate, Deaths, Death.Rate, Actives) %>% 
-  arrange(desc(Actives)) %>% 
+  arrange(desc(Confirmed)) %>% 
   kable(align = c("crcccc"), format.args = list(decimal.mark = '.', big.mark = ",")) %>% 
   kable_styling(fixed_thead = T,
                 bootstrap_options = c("striped", "hover", "condensed"),
@@ -118,8 +118,8 @@ covid19.jh %>%
            Report.Date == Latest.Date) %>% 
   mutate(Two.days.var = scales::percent(Two.days.var),
          Five.days.var = scales::percent(Five.days.var)) %>% 
-  select(Report.Date, Country.Region, New.Cases, Two.days.var, Five.days.var, New.Deaths, Actives) %>% 
-  arrange(desc(Actives)) %>% 
+  select(Report.Date, Country.Region, Confirmed, New.Cases, Two.days.var, Five.days.var, New.Deaths) %>% 
+  arrange(desc(Confirmed)) %>% 
   kable(align = c("crcccc"), format.args = list(decimal.mark = '.', big.mark = ",")) %>% 
   kable_styling(fixed_thead = T,
                 bootstrap_options = c("striped", "hover", "condensed"),
@@ -238,7 +238,7 @@ covid19.jh %>%
   mutate(Death.Rate = scales::percent(Death.Rate),
          Recov.Rate = scales::percent(Recov.Rate)) %>% 
   select(Report.Date, Country.Region, Confirmed, Recovered, Recov.Rate, Deaths, Death.Rate, Actives) %>% 
-  arrange(desc(Actives)) %>% 
+  arrange(desc(Confirmed)) %>% 
   kable(align = c("crcccc"), format.args = list(decimal.mark = '.', big.mark = ",")) %>% 
   kable_styling(fixed_thead = T,
                 bootstrap_options = c("striped", "hover", "condensed"),
@@ -252,8 +252,8 @@ covid19.jh %>%
            Report.Date == Latest.Date) %>% 
   mutate(Two.days.var = scales::percent(Two.days.var),
          Five.days.var = scales::percent(Five.days.var)) %>% 
-  select(Report.Date, Country.Region, New.Cases, Two.days.var, Five.days.var, New.Deaths, Actives) %>% 
-  arrange(desc(Actives)) %>% 
+  select(Report.Date, Country.Region, Confirmed, New.Cases, Two.days.var, Five.days.var, New.Deaths) %>% 
+  arrange(desc(Confirmed)) %>% 
   kable(align = c("crcccc"), format.args = list(decimal.mark = '.', big.mark = ",")) %>% 
   kable_styling(fixed_thead = T,
                 bootstrap_options = c("striped", "hover", "condensed"),
