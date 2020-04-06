@@ -74,6 +74,7 @@ covid19.jh <- covid19.jh.c %>%
   left_join(covid19.jh.r, by = c("Country.Region", "Report.Date")) %>%
   left_join(covid19.jh.d, by = c("Country.Region", "Report.Date")) %>% 
   select(Report.Date, everything()) %>% 
+  filter(Confirmed > 0) %>% 
   group_by(Country.Region) %>% 
   mutate(Confirmed = ifelse(Country.Region=='Peru' & Report.Date=='2020-03-20',263,Confirmed),
          Confirmed = ifelse(Country.Region=='Chile' & Report.Date=='2020-03-19',342,Confirmed),
