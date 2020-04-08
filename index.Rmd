@@ -165,14 +165,18 @@ covid19.jh %>%
   ggplot(aes(x=Dia, y=Two.days.var, fill=Country.Region)) + 
   geom_bar(stat="identity", position=position_dodge()) +
   ylim(0, 2.5) +
+  #geom_hline(aes(yintercept=1), linetype="dashed", color = "red") +
   geom_smooth() +
   facet_wrap(~Country.Region) +
-  ggtitle("Nuevos Contagios (Two.Days.var), días después del primer contagio de COVID-19") +
+  ggtitle("Velocidad de nuevos contagios, días después del primer contagio de COVID-19") +
   theme_minimal() +
   theme(legend.position = "none",
           axis.title = element_blank(),
           axis.text.x = element_text(angle = 0, hjust = 0)) 
 ```
+
+*Tasa de variación de los casos acumulados en dos días. En el peor de los escenarios, un valor de 1*  
+*es indicativo de que cada dos días se duplican los casos confirmados.*
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 covid19.jh %>% 
@@ -297,14 +301,18 @@ covid19.jh %>%
   ggplot(aes(x=Dia, y=Two.days.var, fill=Country.Region)) + 
   geom_bar(stat="identity", position=position_dodge()) +
   ylim(0, 2) +
+  #geom_hline(aes(yintercept=1), linetype="dashed", color = "red") +
   geom_smooth() +
   facet_wrap(~Country.Region) +
-  ggtitle("Nuevos Contagios (Two.Days.var), días después del primer contagio de COVID-19") +
+  ggtitle("Velocidad de nuevos contagios, días después del primer contagio de COVID-19") +
   theme_minimal() +
   theme(legend.position = "none",
           axis.title = element_blank(),
           axis.text.x = element_text(angle = 0, hjust = 0)) 
 ```
+
+*Tasa de variación de los casos acumulados en dos días. En el peor de los escenarios, un valor de 1*  
+*es indicativo de que cada dos días se duplican los casos confirmados.*
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 covid19.jh %>% 
@@ -321,7 +329,7 @@ covid19.jh %>%
   ylim(-1, 2) +
   geom_hline(aes(yintercept=0), linetype="dashed", color = "red") +
   #geom_point(size=3, shape=21, fill="white") +
-  ggtitle("Tasa de aceleración días después del primer contagio de COVID-19") +
+  ggtitle("Tasa de aceleración, días después del primer contagio de COVID-19") +
   geom_dl(aes(label = Country.Region), method = list("last.points",cex=0.8,vjust=-0.8, hjust=0.5)) +
   theme_minimal() +
   theme(legend.position="none",
