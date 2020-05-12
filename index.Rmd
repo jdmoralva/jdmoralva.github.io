@@ -200,8 +200,7 @@ covid19.jh %>%
           axis.title = element_blank())
 ```
 
-*Se estima que cuando la tasa de aceleración (Rolling Mean 6 days) empiece a ser negativa, habremos alcanzado*  
-*el pico de contagios y la curva de nuevos casos empezaría a descender.*
+*Se estima que cuando la tasa de aceleración (Rolling Mean 6 days) empiece a ser negativa, habremos alcanzado el pico de contagios y la curva de nuevos casos empezaría a descender.*
 
 ```{r, echo=FALSE, message=FALSE}
 covid19.jh %>% 
